@@ -1,0 +1,5 @@
+{:paths ["src"]
+ :deps {jinx {:mvn/version "0.1.6"}
+        juxt/crux-core {:mvn/version "20.03-1.7.1-alpha"}}
+ :aliases
+ {:dev {:extra-paths ["test"]}}}
