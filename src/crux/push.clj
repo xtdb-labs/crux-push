@@ -38,6 +38,23 @@
                (contains? items "crux:document")))))
     (get schema "properties")))
 
+(defn validate-message [message schema]
+  (let [exp-schema (get (jinxresolv/expand-document schema nil) "anyOf")
+        result (reduce
+                 (fn [errors ss]
+                   (let [validation (jinx/validate message ss)]
+                     (if (:valid? validation)
+                       (reduced {:validated-message validation
+                                 :sub-schema ss
+                                 :success true})
+                       (conj errors validation))))
+                 [] exp-schema)]
+    (if (:success result)
+      result
+      (throw (ex-info "Invalid Message Exception: The message did not match the supplied schema"
+                      {:error ::invalid-message
+                       :validation result})))))
+
 (defn cruxify-message [message schema]
   (let [cruxify
         (fn this [doc schema]
@@ -87,23 +104,6 @@
               (crux-schemas schema))))]
     (cruxify message schema)))
 
-(defn validate-message [message schema]
-  (let [exp-schema (get (jinxresolv/expand-document schema nil) "anyOf")
-        result (reduce
-                 (fn [errors ss]
-                   (let [validation (jinx/validate message ss)]
-                     (if (:valid? validation)
-                       (reduced {:validated-message validation
-                                 :sub-schema ss
-                                 :success true})
-                       (conj errors validation))))
-                 [] exp-schema)]
-    (if (:success result)
-      result
-      (throw (ex-info "Invalid Message Exception: The message did not match the supplied schema"
-                      {:error ::invalid-message
-                       :validation result})))))
-
 (defn flatten-crux-documents
   [input]
   (let [f (fn this [m]
@@ -131,9 +131,7 @@
                           (reduce
                             (fn [acc item]
                               (let [nested-map (this item)
-                                    _ (prn nested-map)
                                     nested-map-id (:crux.db/id item)]
-
                                 (if nested-map-id
                                   (-> acc
                                       (update :subdocs (fnil conj []) nested-map)
