@@ -20,17 +20,12 @@
           (compare x y)
           r)))))
 
-(defn split-on-subdocs [doc]
-  (lazy-seq
-    (cons
-      (dissoc doc ::subdocs)
-      (mapcat split-on-subdocs (::subdocs doc)))))
-
 (defn crux-schemas [schema]
   (filter
     (fn [[_ v]]
       (or
         (contains? v "crux:document")
+        (contains? v "crux:ref")
         (and (= (get v "type") "array")
              (let [items (get v "items")]
                ;; we don't currently support the array form of items.
@@ -60,15 +55,16 @@
         (fn this [doc schema]
           (let [id (if (get doc :crux.db/id)
                      (UUID/fromString (get doc :crux.db/id))
+                     ;; may need this crux id to be a string
                      (UUID/randomUUID))
-                typ (get schema "crux:type")
+                crux-type (get schema "crux:type")
                 doc (into
                       ;; This sorted-map-by might be something to
                       ;; toggle in options
                       (sorted-map-by (key-comparator))
                       (cond-> doc
                         id (assoc :crux.db/id id)
-                        typ (assoc :crux.push/type typ)))]
+                        crux-type (assoc ::type crux-type)))]
 
             (reduce
               (fn [doc [propname {typ "type" :as subschema}]]
@@ -99,6 +95,13 @@
                             component-of (assoc component-of id)))]
                     (-> doc
                         (assoc propname (vec subdocs))))
+
+                  "string"
+                  (if true
+                    ;; TODO Check to see if ref is correct
+                    (update doc propname #(UUID/fromString %))
+                    doc)
+                  
                   doc))
               doc
               (crux-schemas schema))))]

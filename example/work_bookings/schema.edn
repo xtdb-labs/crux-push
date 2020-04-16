@@ -1,0 +1,32 @@
+{"components" {; An employer can alter their employees holidays
+               "manager" {"type" "object"
+                          "crux:document" true
+                          "crux:type" "manager"
+                          "required" ["employeeInfo"]
+                          ; Who they are, not who they manage
+                          "properties" {"employeeInfo" {"type" "string"
+                                                        "crux:ref" "employee"}}}
+               ; An employee can create holidays, they only have a manager if
+               ; it's relevant
+               "employee" {"type" "object"
+                           "crux:document" true
+                           "crux:type" "employee"
+                           "required" ["code" "name"]
+                           "properties" {"code" {"type" "string"}
+                                         "name" {"type" "string"}
+                                         "manager" {"type" "string"
+                                                    "crux:ref" "manager"}}}
+               ; A holiday has a start -> end time and an associated employee
+               ; who it relates to
+               "holiday" {"type" "object"
+                          "crux:document" true
+                          "crux:type" "holiday"
+                          "required" ["start" "end" "employee"]
+                          "properties" {"start" {"type" "string"}
+                                        "end" {"type" "string"}
+                                        "employee" {"type" "string"
+                                                    "crux:ref" "employee"}}}}
+
+ "anyOf" [{"$ref" "#/components/employee"}
+          {"$ref" "#/components/manager"}
+          {"$ref" "#/components/holiday"}]}
