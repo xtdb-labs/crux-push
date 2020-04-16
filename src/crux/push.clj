@@ -53,8 +53,8 @@
 (defn cruxify-message [message schema]
   (let [cruxify
         (fn this [doc schema]
-          (let [id (if (get doc :crux.db/id)
-                     (UUID/fromString (get doc :crux.db/id))
+          (let [id (if (get doc "crux:id")
+                     (UUID/fromString (get doc "crux:id"))
                      ;; may need this crux id to be a string
                      (UUID/randomUUID))
                 crux-type (get schema "crux:type")
@@ -63,7 +63,7 @@
                       ;; toggle in options
                       (sorted-map-by (key-comparator))
                       (cond-> doc
-                        id (assoc :crux.db/id id)
+                        id (-> (assoc :crux.db/id id) (dissoc "crux:id"))
                         crux-type (assoc ::type crux-type)))]
 
             (reduce
@@ -99,7 +99,7 @@
                   "string"
                   (if true
                     ;; TODO Check to see if ref is correct
-                    (update doc propname #(UUID/fromString %))
+                    (update doc propname (fn [id] (when id (UUID/fromString id))))
                     doc)
                   
                   doc))
