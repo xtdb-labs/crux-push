@@ -97,7 +97,7 @@
                         (assoc propname (vec subdocs))))
 
                   "string"
-                  (if true
+                  (if (get doc propname)
                     ;; TODO Check to see if ref is correct
                     (update doc propname (fn [id] (when id (UUID/fromString id))))
                     doc)
@@ -156,7 +156,7 @@
 
 (defn create-ingestor
   [{:keys [crux schema]}]
-  (let [schema (jinx/schema (edn/read-string (slurp (io/resource schema))))]
+  (let [schema (jinx/schema schema)]
     (fn [raw-docs]
       (let [{:keys [validated-message sub-schema]} (validate-message raw-docs schema)
         docs (cruxify-message (:instance validated-message) sub-schema)

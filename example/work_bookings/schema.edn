@@ -3,6 +3,7 @@
                           "crux:document" true
                           "crux:type" "manager"
                           "required" ["employeeInfo"]
+                          "not" {"required" ["employees"]}
                           ; Who they are, not who they manage
                           "properties" {"employeeInfo" {"type" "string"
                                                         "crux:ref" "employee"}}}
@@ -11,6 +12,7 @@
                "employee" {"type" "object"
                            "crux:document" true
                            "crux:type" "employee"
+                           "crux:containerAttribute" "manager"
                            "required" ["code" "name"]
                            "properties" {"code" {"type" "string"}
                                          "name" {"type" "string"}
@@ -25,8 +27,18 @@
                           "properties" {"start" {"type" "string"}
                                         "end" {"type" "string"}
                                         "employee" {"type" "string"
-                                                    "crux:ref" "employee"}}}}
+                                                    "crux:ref" "employee"}}}
+               "deepManager" {"type" "object"
+                              "crux:document" true
+                              "crux:type" "manager"
+                              "required" ["employeeInfo" "employees"]
+                              ; Who they are, not who they manage
+                              "properties" {"employeeInfo" {"type" "string"
+                                                            "crux:ref" "employee"}
+                                            "employees" {"type" "array"
+                                                         "items" {"$ref" "#/components/employee"}}}}}
 
  "anyOf" [{"$ref" "#/components/employee"}
+          {"$ref" "#/components/holiday"}
           {"$ref" "#/components/manager"}
-          {"$ref" "#/components/holiday"}]}
+          {"$ref" "#/components/deepManager"}]}
