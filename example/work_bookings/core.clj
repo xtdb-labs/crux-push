@@ -103,3 +103,6 @@
   (def node (crux/start-node {:crux.node/topology '[crux.standalone/topology]}))
   (def ss (svr node))
   ((:close ss)))
+
+(crux/q (crux/db node) '{:find [e]
+                         :where [[e "manager" m]]})

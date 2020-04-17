@@ -43,7 +43,7 @@
                "line2" "Heeley Road"}}
              schema)))
 
-(t/deftest small-schema-example
+(t/deftest small-schema-example-test
   (let [schema (jinx/schema test-schema)
         catt {"pawsize" "big"
               "species" "house-cat"
@@ -70,6 +70,7 @@
 
     (t/testing "cruxify"
       ;; The document cruxified contains the same info
+      (t/is false)
       (t/is
         (= duck
            (select-keys
