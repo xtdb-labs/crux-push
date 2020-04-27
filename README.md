@@ -1,17 +1,39 @@
 # crux-push
 
-This is an WIP of combining jinx with crux into a JSONSchema driven ingestion
-library.
+WIP of combining jinx with crux into a JSON Schema driven ingestion library.
+
+This library adds annotations to JSON Schema which are able to manipulate
+submitted documents into Crux friendly structures.
 
 See `example/work-bookings` for a demonstration
 
-## Custom attributes
+## Custom annotations
 
-* `crux:document`
-* `crux:ref`
-* `crux:id`
-* `crux:type`
-* `crux:containerAttribute`
+<dl>
+<dt><code>crux:document</code></dt>
+<dd>Decomposes an object into a separate document of its own.</dd>
+
+<dt><code>crux:ref</code></dt>
+<dd>Marks a string as a reference and will attempt to convert it into a
+UUID.</dd>
+
+<dt><code>crux:id</code></dt>
+<dd>If this tag is included in a submitted object which has the JSON Schema
+<code>crux:document</code> property, instead of generating a random UUID, the
+id will be set as this string, converted into a UUID.</dd>
+
+<dt><code>crux:type</code></dt>
+<dd>This adds a <code>:crux-push/type</code> attribute to the submitted
+document with the value of <code>crux:type</code>.</dd>
+
+<dt><code>crux:containerAttribute</code></dt>
+<dd>When included within an object schema, if the object is contained within an
+array inside another object, the object inside the array will include an
+additional attribute. This attribute will have the key of the
+<code>crux:containerAttribute</code> value, and the value of the
+<code>crux.db/id</code> of the parent object. I.e. The child document will
+reference the parent.</dd>
+</dl>
 
 ## Examples
 
