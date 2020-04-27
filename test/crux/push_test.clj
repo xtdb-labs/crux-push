@@ -70,7 +70,6 @@
 
     (t/testing "cruxify"
       ;; The document cruxified contains the same info
-      (t/is false)
       (t/is
         (= duck
            (select-keys
