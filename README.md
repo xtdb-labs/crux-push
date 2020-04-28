@@ -67,3 +67,21 @@ curl -X POST localhost:3000/query -H 'Content-Type: application/edn' -d '
  :full-results? true}'
 ```
 
+## Why?
+
+When designing an API for a client or even for a personal project, the
+specification will often change. Whether this is from another program being
+updating and producing more or different data, or if this is from a new feature
+you want to add. If written directly in code, APIs in general require a non
+trivial amount of work to expand. By instead writing the API via a
+configuration file, it allows a more dynamic approach to the API. This could be
+done multiple different ways (for example writing a standalone library), but we
+chose JSON Schema (or rather jinx).
+
+JSON Schema gives us data verification as well the format being explicitly
+designed for something like this (see
+[`json-schema-vocabularies`](https://github.com/json-schema-org/json-schema-vocabularies)).
+By expanding on top of [`jinx`](https://github.com/juxt/jinx) a reasonable
+chunk of work is done for us as well. All we have to do is take the validated
+schema with the parsed JSON structure, and then iterate through them together,
+paying attention to our new annotations in the schema.
