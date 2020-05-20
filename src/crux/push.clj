@@ -50,11 +50,17 @@
                       {:error ::invalid-message
                        :validation result})))))
 
+(defn conform-id ;;TODO better conforming uses uuid length atm
+  [id]
+  (if (= 36 (count id))
+    (java.util.UUID/fromString id)
+    (keyword id))) 
+
 (defn cruxify-message [message schema]
   (let [cruxify
         (fn this [doc schema]
           (let [id (if (get doc "crux:id")
-                     (UUID/fromString (get doc "crux:id"))
+                     (conform-id (get doc "crux:id"))
                      ;; may need this crux id to be a string
                      (UUID/randomUUID))
                 crux-type (get schema "crux:type")
